@@ -29,3 +29,28 @@ stages:
           tags: |
             $(tag)
 
+- stage: Provision
+  displayName: 'Terraform automation'
+  dependsOn: Build
+  jobs:
+    - job: provision
+      displayName: 'Provisioning container instance'
+      pool: 
+        vmImage: ubuntu-latest
+      variables:
+      - group: TerraformVars
+      steps:
+      - script: |
+          set -e 
+
+          terraform init -input=false
+          terraform apply -input=false -auto-approve
+        name: 'Run_terraform'
+        displayName: 'Run Terraform'
+        env:
+          ARM_CLIENT_ID: $(ARM_CLIENT_ID)
+          ARM_TENANT_ID: $(ARM_TENANT_ID)
+          ARM_CLIENT_SECRET: $(ARM_CLIENT_SECRET)
+          ARM_SUBSCRIPTION_ID: $(ARM_SUBSCRIPTION_ID) 
+
+
